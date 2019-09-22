@@ -18,8 +18,8 @@ public:
     }
     
     bool out_proc(){
-        my_mute2.lock();
         my_mutex.lock();
+        my_mute2.lock();
         if(!list.empty()){
             cout<<"outfunc front"<<list.front()<<endl;
             list.pop_front();
