@@ -2,9 +2,10 @@
 #include <thread>
 #include <vector>
 using namespace std;
+vector<int> g_v={1,2,3};//共享数据
 
 void myprint(const int i){//改晨string 隐式转换
-    std::cout<<"myprint: "<<i<<" thread_id: "<<std::this_thread::get_id()<<std::endl;
+    std::cout<<"g_v data: "<<g_v[0]<<g_v[1 ]<<g_v[2]<<" thread_id: "<<std::this_thread::get_id()<<std::endl;
     return;
 }
 
