@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 2.6)
+set(TARGET_NAME "DemoProject")
+project(${TARGET_NAME})
+add_definitions(-std=c++11)
+add_executable(${TARGET_NAME} main.cpp)
