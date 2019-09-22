@@ -1,22 +1,38 @@
 #include <iostream>
 #include <thread>
 #include <vector>
+#include <list>
 using namespace std;
-vector<int> g_v={1,2,3};//共享数据
+class A{
+public:
+    void infunc(){
+        for(int i=0; i<1000; i++){
+            list.push_back(i);
+            cout<<"infunc push back"<<i<<endl;
+        }
+    }
+    
+    void outfunc(){
+        for(int i=0; i<1000; i++){
+            if(!list.empty()){
+                cout<<"outfunc front"<<list.front()<<endl;
+                list.pop_front();
+            }else{
+                cout<<"list empty"<<endl;
+            }
+        }
+        cout<<"end"<<endl;
+    }
 
-void myprint(const int i){//改晨string 隐式转换
-    std::cout<<"g_v data: "<<g_v[0]<<g_v[1 ]<<g_v[2]<<" thread_id: "<<std::this_thread::get_id()<<std::endl;
-    return;
-}
+private:
+    list<int> list;
+};
 
 int main(int argc, const char * argv[]) {
-    std::vector<std::thread> myth;
-    for(int i=0; i<10; i++){
-        myth.push_back(thread(myprint, i));//创建并开始执行线程
-    }
-    for(auto iter = myth.begin(); iter != myth.end(); ++iter){
-        iter->join();//等待10个线程都返回
-    }
-    cout<<"in main"<<endl;
+    A a;
+    thread in_thread(&A::infunc, &a);
+    thread out_thread(&A::outfunc,&a);
+    in_thread.join();
+    out_thread.join();
     return 0;
 }
