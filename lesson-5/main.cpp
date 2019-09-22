@@ -8,8 +8,7 @@ class A{
 public:
     void infunc(){
         for(int i=0; i<100; i++){
-            my_mutex.lock();
-            my_mute2.lock();
+            std::lock(my_mutex,my_mute2);
             list.push_back(i);
             my_mutex.unlock();
             my_mute2.unlock();
@@ -18,8 +17,7 @@ public:
     }
     
     bool out_proc(){
-        my_mutex.lock();
-        my_mute2.lock();
+        std::lock(my_mutex,my_mute2);
         if(!list.empty()){
             cout<<"outfunc front"<<list.front()<<endl;
             list.pop_front();
