@@ -7,27 +7,34 @@ using namespace std;
 class A{
 public:
     void infunc(){
-        for(int i=0; i<5; i++){
+        for(int i=0; i<100; i++){
             my_mutex.lock();
+            my_mute2.lock();
             list.push_back(i);
             my_mutex.unlock();
+            my_mute2.unlock();
             cout<<"infunc push back"<<i<<endl;
         }
     }
     
     bool out_proc(){
-        std::lock_guard<mutex> my_lock_guard(my_mutex);//创建lockguard 对象mutex加锁
+        my_mute2.lock();
+        my_mutex.lock();
         if(!list.empty()){
             cout<<"outfunc front"<<list.front()<<endl;
             list.pop_front();
+            my_mutex.unlock();
+            my_mute2.unlock();
             return true;
         }
+        my_mutex.unlock();
+        my_mute2.unlock();
         return false;
-    }//出作用域lockguard析构， 对象mutex解锁
+    }
     
     
     void outfunc(){
-        for(int i=0; i<5; i++){
+        for(int i=0; i<100; i++){
             bool result = out_proc();
             if(result){cout<<"rm front success!";}
         }
@@ -37,6 +44,7 @@ public:
 private:
     list<int> list;
     mutex my_mutex;
+    mutex my_mute2;
 };
 
 int main(int argc, const char * argv[]) {
