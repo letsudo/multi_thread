@@ -14,18 +14,24 @@ public:
     ~TA(){
         std::cout<<"析构函数"<<"thread_id: "<<std::this_thread::get_id()<<std::endl;
     }
+    
+    void thread_work(int a){
+        std::cout<<"int a : "<<a<<" thread_work thread_id: "<<std::this_thread::get_id()<<std::endl;
+    }
 };
 
-void myprint(const int i, unique_ptr<int> p){//改晨string 隐式转换
+void myprint(const int i, const TA &p){//改晨string 隐式转换
+    p.m_i = 199;
     std::cout<<"myprint"<<"thread_id: "<<std::this_thread::get_id()<<std::endl;
 }
 int main(int argc, const char * argv[]) {
-    // 传递临时变量作为线程参数
+    // 传递临时变量作为线程 参数
     std::cout<<"主线程id: "<<"thread_id: "<<std::this_thread::get_id()<<std::endl;
-    unique_ptr<int> ptr(new int(100));
-    thread t(myprint, 1, std::move(ptr));// 采用临时构造传递参数是可行的，这个转换到stirng的过程先于main函数的结束，会先完成转换，避免临时变量失效，视频中采用字写类测试，此处会调用构造函数和拷贝构造函数
+    TA ta(10);//& === std::ref 谨慎使用detach
+    thread t(&TA::thread_work, &(ta), 15);// 采用临时构造传递参数是可行的，这个转换到stirng的过程先于main函数的结束，会先完成转换，避免临时变量失效，视频中采用字写类测试，此处会调用构造函数和拷贝构造函数
     t.join();
 //    t.detach();
+    cout<<"Hi in main"<<ta.m_i<<endl;
     cout<<"Hi in main"<<endl;
     return 0;
 }
