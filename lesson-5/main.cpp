@@ -16,16 +16,14 @@ public:
     }
     
     bool out_proc(){
-        my_mutex.lock();
+        std::lock_guard<mutex> my_lock_guard(my_mutex);//创建lockguard 对象mutex加锁
         if(!list.empty()){
             cout<<"outfunc front"<<list.front()<<endl;
             list.pop_front();
-            my_mutex.unlock();
             return true;
         }
-        my_mutex.unlock();
         return false;
-    }
+    }//出作用域lockguard析构， 对象mutex解锁
     
     
     void outfunc(){
