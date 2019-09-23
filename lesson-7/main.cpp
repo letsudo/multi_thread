@@ -6,6 +6,11 @@
 using namespace std;
 class A{
 public:
+    //转移所有权
+    std::unique_lock<mutex> rtn_unique_lock(){
+        std::unique_lock<mutex> mu1(my_mutex);
+        return mu1;
+    }
     void infunc(){
         for(int i=0; i<1000; i++){
             std::unique_lock<mutex> my1(my_mutex);
