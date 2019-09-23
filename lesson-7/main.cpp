@@ -8,23 +8,19 @@ class A{
 public:
     void infunc(){
         for(int i=0; i<1000; i++){
-            std::unique_lock<mutex> my1(my_mutex, std::try_to_lock); //已经lock过了，不会再次lock
-            if(my1.owns_lock()){
-                list.push_back(i);
-                cout<<"infunc push back"<<i<<endl;
-            }
-            else{
-                cout<<"do something else"<<i<<endl;
-            }
+            std::unique_lock<mutex> my1(my_mutex);
+            std::mutex *ptx = my1.release();
+            list.push_back(i);
+            ptx->unlock();
         }
     }
     
     bool out_proc(){
         
         std::lock_guard<mutex> my1(my_mutex); //已经lock过了，不会再次lock
-        std::chrono::milliseconds dura(20000);
-        cout<<"start sleep"<<list.front()<<endl;
-        std::this_thread::sleep_for(dura);
+//        std::chrono::milliseconds dura(20000);
+//        cout<<"start sleep"<<list.front()<<endl;
+//        std::this_thread::sleep_for(dura);
         if(!list.empty()){
             cout<<"outfunc front"<<list.front()<<endl;
             list.pop_front();
