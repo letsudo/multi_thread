@@ -16,7 +16,7 @@ public:
             std::unique_lock<mutex> my1(my_mutex);
             std::mutex *ptx = my1.release();
             list.push_back(i);
-            my_condition.notify_one();//尝试把wait（）线程唤醒
+            my_condition.notify_all();//尝试把wait（）线程唤醒
             cout<<"push_back"<<endl;
             ptx->unlock();
         }
@@ -48,7 +48,7 @@ public:
             command = list.front();
             list.pop_front();
              cout<<list.size()<<endl;
-             cout<<"pop_front"<<endl;
+            cout<<"pop_front, thread id:\t"<<std::this_thread::get_id()<<endl;
             my1.unlock();//因为unique比较灵活，此处可以直接先解锁
         }
         
@@ -69,7 +69,9 @@ int main(int argc, const char * argv[]) {
     A a;
     thread in_thread(&A::infunc, &a);
     thread out_thread(&A::outfunc,&a);
+    thread out_thread2(&A::outfunc,&a);
     in_thread.join();
     out_thread.join();
+    out_thread2.join();
     return 0;
 }
