@@ -5,13 +5,17 @@
 #include <mutex>
 #include <future>
 using namespace std;
-int mythread(){
-    cout<<"my thread start thread id:\t"<<this_thread::get_id()<<endl;
-    chrono::milliseconds dura(5000);
-    this_thread::sleep_for(dura);
-    cout<<"my thread end thread id:\t"<<this_thread::get_id()<<endl;
-    return 5;
-}
+class A{
+public:
+    int mythread(int para){
+        cout<<para<<endl;
+        cout<<"my thread start thread id:\t"<<this_thread::get_id()<<endl;
+        chrono::milliseconds dura(5000);
+        this_thread::sleep_for(dura);
+        cout<<"my thread end thread id:\t"<<this_thread::get_id()<<endl;
+        return 5;
+    }
+};
 
 int main(int argc, const char * argv[]) {
     
@@ -21,8 +25,11 @@ int main(int argc, const char * argv[]) {
     //std::future  类模版
     //启动一个异步任务： 就是自动创建一个线程并开始执行线程的入口函数，返回future包含线程的返回结果，可以通过调用future的get（）获得结果
     //futrue 在线程执行完毕后能拿到的结果
+    A a;
+    int temp =12;
     cout<<"main thread id:\t"<<this_thread::get_id()<<endl;
-    std::future<int> result = std::async(mythread); //创建一个线程并开始执行
+//    std::future<int> result = std::async(mythread); //创建一个线程并开始执行
+    std::future<int> result = std::async(&A::mythread, &a, temp); //创建一个线程并开始执行
     cout<<"continue!"<<endl;
     cout<<result.get()<<endl;//卡在这里等待mythread执行完拿到结果
 //    cout<<result.get()<<endl;//只能调用一次，调用多次崩溃
