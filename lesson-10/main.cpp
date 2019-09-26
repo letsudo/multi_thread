@@ -37,6 +37,13 @@ void mythread(std::promise<int> &tmpp, int cala) {
     return;
     
 }
+
+void mythread2(std::future<int> &tempf){
+    auto result = tempf.get();
+    cout<<"mythread2: "<<result<<endl;
+    return;
+}
+
 int main(int argc, const char * argv[]) {
     
 //     一 async，future 创建后台任务并返回值
@@ -110,7 +117,9 @@ int main(int argc, const char * argv[]) {
     std::thread t1(mythread,std::ref(mypromise), 180);
     t1.join();
     std::future<int> fu = mypromise.get_future();
-    auto result =fu.get();
-    cout<<result<<endl;
+//    auto result =fu.get();
+    std::thread t2(mythread2, std::ref(fu));
+    t2.join();
+    cout<<"main"<<endl;
     return 0;
 }
