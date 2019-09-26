@@ -72,10 +72,15 @@ int main(int argc, const char * argv[]) {
         cout<<"my thread end thread id:\t"<<this_thread::get_id()<<endl;
         return 5;
     });//我们把函数mythread通过packaged_task包装起来
-    std::thread t1(std::ref(mypt),1);//线程直接开始执行，第二个参数作为线程入口函数的参数
-    t1.join();//等待线程执行完毕
+//    std::thread t1(std::ref(mypt),1);//线程直接开始执行，第二个参数作为线程入口函数的参数
+//    t1.join();//等待线程执行完毕
+//    std::future<int> result = mypt.get_future();//std::future 包含线程入口函数的返回结果，
+//    cout<<result.get()<<endl;//卡在这里等待mythread执行完拿到结果
+//    cout<<"done!"<<endl;
+    
+    //直接调用，相当于函数调用，不会创建线程
+    mypt(1);
     std::future<int> result = mypt.get_future();//std::future 包含线程入口函数的返回结果，
     cout<<result.get()<<endl;//卡在这里等待mythread执行完拿到结果
-    cout<<"done!"<<endl;
     return 0;
 }
