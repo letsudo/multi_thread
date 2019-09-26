@@ -26,6 +26,7 @@ int mythread(int para){
     return 5;
 }
 
+vector<std::packaged_task<int(int)>> mytasks; //容器
 int main(int argc, const char * argv[]) {
     
 //     一 async，future 创建后台任务并返回值
@@ -79,8 +80,17 @@ int main(int argc, const char * argv[]) {
 //    cout<<"done!"<<endl;
     
     //直接调用，相当于函数调用，不会创建线程
-    mypt(1);
-    std::future<int> result = mypt.get_future();//std::future 包含线程入口函数的返回结果，
+//    mypt(1);
+//    std::future<int> result = mypt.get_future();//std::future 包含线程入口函数的返回结果，
+//    cout<<result.get()<<endl;//卡在这里等待mythread执行完拿到结果
+    
+    mytasks.push_back(std::move(mypt));
+    std::packaged_task<int(int)> mypt2;
+    auto iter = mytasks.begin();
+    mypt2 = std::move(*iter);//移动语义
+    mytasks.erase(iter);//删除第一个元素，迭代已经失效，后续不能再使用iter
+    mypt2(1);
+    std::future<int> result = mypt2.get_future();//std::future 包含线程入口函数的返回结果，
     cout<<result.get()<<endl;//卡在这里等待mythread执行完拿到结果
     return 0;
 }
