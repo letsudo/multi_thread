@@ -17,16 +17,26 @@ using namespace std;
 //    }
 //};
 
-int mythread(int para){
-    cout<<para<<endl;
-    cout<<"my thread start thread id:\t"<<this_thread::get_id()<<endl;
+//int mythread(int para){
+//    cout<<para<<endl;
+//    cout<<"my thread start thread id:\t"<<this_thread::get_id()<<endl;
+//    chrono::milliseconds dura(5000);
+//    this_thread::sleep_for(dura);
+//    cout<<"my thread end thread id:\t"<<this_thread::get_id()<<endl;
+//    return 5;
+//}
+//
+//vector<std::packaged_task<int(int)>> mytasks; //容器
+
+void mythread(std::promise<int> &tmpp, int cala) {
     chrono::milliseconds dura(5000);
     this_thread::sleep_for(dura);
-    cout<<"my thread end thread id:\t"<<this_thread::get_id()<<endl;
-    return 5;
+    cala++;
+    int result = cala;
+    tmpp.set_value(result);
+    return;
+    
 }
-
-vector<std::packaged_task<int(int)>> mytasks; //容器
 int main(int argc, const char * argv[]) {
     
 //     一 async，future 创建后台任务并返回值
@@ -62,35 +72,45 @@ int main(int argc, const char * argv[]) {
 //    cout<<"done!"<<endl;
     
     
-    // 二、 std::packaged_task 打包任务，把任务包装起来
-    // 是个类模板，他的参数是各种可调用对象，通过std::packaged_task把d各种调用对象包装起来，方便作为线程入口函数
-    cout<<"main thread id:\t"<<this_thread::get_id()<<endl;
-    std::packaged_task<int(int)> mypt([](int mypar){
-        cout<<mypar<<endl;
-        cout<<"my thread start thread id:\t"<<this_thread::get_id()<<endl;
-        chrono::milliseconds dura(5000);
-        this_thread::sleep_for(dura);
-        cout<<"my thread end thread id:\t"<<this_thread::get_id()<<endl;
-        return 5;
-    });//我们把函数mythread通过packaged_task包装起来
-//    std::thread t1(std::ref(mypt),1);//线程直接开始执行，第二个参数作为线程入口函数的参数
-//    t1.join();//等待线程执行完毕
-//    std::future<int> result = mypt.get_future();//std::future 包含线程入口函数的返回结果，
+//    // 二、 std::packaged_task 打包任务，把任务包装起来
+//    // 是个类模板，他的参数是各种可调用对象，通过std::packaged_task把d各种调用对象包装起来，方便作为线程入口函数
+//    cout<<"main thread id:\t"<<this_thread::get_id()<<endl;
+//    std::packaged_task<int(int)> mypt([](int mypar){
+//        cout<<mypar<<endl;
+//        cout<<"my thread start thread id:\t"<<this_thread::get_id()<<endl;
+//        chrono::milliseconds dura(5000);
+//        this_thread::sleep_for(dura);
+//        cout<<"my thread end thread id:\t"<<this_thread::get_id()<<endl;
+//        return 5;
+//    });//我们把函数mythread通过packaged_task包装起来
+////    std::thread t1(std::ref(mypt),1);//线程直接开始执行，第二个参数作为线程入口函数的参数
+////    t1.join();//等待线程执行完毕
+////    std::future<int> result = mypt.get_future();//std::future 包含线程入口函数的返回结果，
+////    cout<<result.get()<<endl;//卡在这里等待mythread执行完拿到结果
+////    cout<<"done!"<<endl;
+//
+//    //直接调用，相当于函数调用，不会创建线程
+////    mypt(1);
+////    std::future<int> result = mypt.get_future();//std::future 包含线程入口函数的返回结果，
+////    cout<<result.get()<<endl;//卡在这里等待mythread执行完拿到结果
+//
+//    mytasks.push_back(std::move(mypt));
+//    std::packaged_task<int(int)> mypt2;
+//    auto iter = mytasks.begin();
+//    mypt2 = std::move(*iter);//移动语义
+//    mytasks.erase(iter);//删除第一个元素，迭代已经失效，后续不能再使用iter
+//    mypt2(1);
+//    std::future<int> result = mypt2.get_future();//std::future 包含线程入口函数的返回结果，
 //    cout<<result.get()<<endl;//卡在这里等待mythread执行完拿到结果
-//    cout<<"done!"<<endl;
+//    return 0;
     
-    //直接调用，相当于函数调用，不会创建线程
-//    mypt(1);
-//    std::future<int> result = mypt.get_future();//std::future 包含线程入口函数的返回结果，
-//    cout<<result.get()<<endl;//卡在这里等待mythread执行完拿到结果
-    
-    mytasks.push_back(std::move(mypt));
-    std::packaged_task<int(int)> mypt2;
-    auto iter = mytasks.begin();
-    mypt2 = std::move(*iter);//移动语义
-    mytasks.erase(iter);//删除第一个元素，迭代已经失效，后续不能再使用iter
-    mypt2(1);
-    std::future<int> result = mypt2.get_future();//std::future 包含线程入口函数的返回结果，
-    cout<<result.get()<<endl;//卡在这里等待mythread执行完拿到结果
+    //三 std::promise 类模版
+    //可以在某个线程中给他肤质，然后在其他线程中去出此值
+    std::promise<int> mypromise;
+    std::thread t1(mythread,std::ref(mypromise), 180);
+    t1.join();
+    std::future<int> fu = mypromise.get_future();
+    auto result =fu.get();
+    cout<<result<<endl;
     return 0;
 }
