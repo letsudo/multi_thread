@@ -64,7 +64,14 @@ int main(int argc, const char * argv[]) {
     // 二、 std::packaged_task 打包任务，把任务包装起来
     // 是个类模板，他的参数是各种可调用对象，通过std::packaged_task把d各种调用对象包装起来，方便作为线程入口函数
     cout<<"main thread id:\t"<<this_thread::get_id()<<endl;
-    std::packaged_task<int(int)> mypt(mythread);//我们把函数mythread通过packaged_task包装起来
+    std::packaged_task<int(int)> mypt([](int mypar){
+        cout<<mypar<<endl;
+        cout<<"my thread start thread id:\t"<<this_thread::get_id()<<endl;
+        chrono::milliseconds dura(5000);
+        this_thread::sleep_for(dura);
+        cout<<"my thread end thread id:\t"<<this_thread::get_id()<<endl;
+        return 5;
+    });//我们把函数mythread通过packaged_task包装起来
     std::thread t1(std::ref(mypt),1);//线程直接开始执行，第二个参数作为线程入口函数的参数
     t1.join();//等待线程执行完毕
     std::future<int> result = mypt.get_future();//std::future 包含线程入口函数的返回结果，
