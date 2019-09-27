@@ -4,16 +4,17 @@
 #include <list>
 #include <mutex>
 #include <future>
+#include <atomic>
 using namespace std;
 
-int g_int =0;
+std::atomic<int> g_int;
 mutex my_mutex;
 
 void mythread(){
     for(int i=0; i<100000000 ;i++){
-        my_mutex.lock();
+//        my_mutex.lock();
         g_int++;
-        my_mutex.unlock();
+//        my_mutex.unlock();
     }
 }
 
