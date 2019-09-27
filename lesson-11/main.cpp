@@ -32,14 +32,14 @@ int main(int argc, const char * argv[]) {
     std::packaged_task<int(int)> mypt(mythread);//我们把函数mythread通过packaged_task包装起来
     std::thread t1(std::ref(mypt),1);//线程直接开始执行，第二个参数作为线程入口函数的参数
     t1.join();//等待线程执行完毕
-    std::future<int> result = mypt.get_future();//std::future 包含线程入口函数的返回结果，
-    bool val = result.valid();
-//    std::shared_future<int> result_s(std::move(result));
-    std::shared_future<int> result_s(result.share()); //执行完毕后result_s 里面有值， 而result里面空了
-    val = result.valid();
-    
-    auto result___ = result_s.get();
-    result___ = result_s.get();
+    std::shared_future<int> result_s = mypt.get_future();//std::future 包含线程入口函数的返回结果，
+//    bool val = result.valid();
+////    std::shared_future<int> result_s(std::move(result));
+//    std::shared_future<int> result_s(result.share()); //执行完毕后result_s 里面有值， 而result里面空了
+//    val = result.valid();
+//
+//    auto result___ = result_s.get();
+//    result___ = result_s.get();
     std::thread t2(mythread2, std::ref(result_s));
     t2.join();
     cout<<"done!"<<endl;
