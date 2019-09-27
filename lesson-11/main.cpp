@@ -7,11 +7,13 @@
 using namespace std;
 
 int g_int =0;
-mutex lock;
+mutex my_mutex;
 
 void mythread(){
-    for(int i=0; i<1000000 ;i++){
+    for(int i=0; i<100000000 ;i++){
+        my_mutex.lock();
         g_int++;
+        my_mutex.unlock();
     }
 }
 
